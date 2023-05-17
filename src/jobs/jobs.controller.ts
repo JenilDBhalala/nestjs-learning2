@@ -1,5 +1,14 @@
-import { Body, Controller, Get, Param, Post, UsePipes } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  UseFilters,
+  UsePipes,
+} from '@nestjs/common';
 import { CreateJobDto } from './dtos/create-job.dto';
+import { IdExceptionFilter } from './exceptions/id-exception.filter';
 import { JobsService } from './jobs.service';
 import { createJobSchema } from './joi/create-job.schema';
 import { JoiValidationPipe } from './pipes/job-validation.pipe';
@@ -15,8 +24,8 @@ export class JobsController {
   }
 
   @Get('/:id')
+  @UseFilters(IdExceptionFilter)
   findJobById(@Param('id') id: number) {
-    console.log('hello jenil');
     return this.jobsService.findJobById(id);
   }
 }
