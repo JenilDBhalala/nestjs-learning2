@@ -19,6 +19,9 @@ export class JobsService {
     if (id < 0) {
       throw new IdException();
     }
+
+    // //Just for learning configuration
+    // console.log(process.env.DATABASE_USER);
     return { id };
   }
 }
