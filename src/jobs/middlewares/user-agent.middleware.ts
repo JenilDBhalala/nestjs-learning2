@@ -1,30 +1,41 @@
-import { ForbiddenException, Injectable, NestMiddleware } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NestMiddleware,
+  Optional,
+} from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 
-export function userAgent(req: Request, res: Response, next: NextFunction) {
-  const ua = req.headers['user-agent'];
-  req['ua'] = ua;
-  next();
+export class UserAgentOptions {
+  accepted?: string[];
 }
 
 @Injectable()
 export class UserAgentMiddleware implements NestMiddleware {
+  constructor(@Optional() private options: UserAgentOptions) {}
+
   use(req: Request, res: Response, next: NextFunction) {
     const ua = req.headers['user-agent'];
 
     if (!this.isUserAgentAcceptable(ua)) {
-      throw new ForbiddenException('Not Allowed');
+      throw new ForbiddenException('Not allowed');
     }
-    req['ua'] = ua;
 
+    console.log(`[UserAgentMiddleware] User Agent: ${ua}`);
+
+    req['ua'] = ua;
     next();
   }
 
   private isUserAgentAcceptable(userAgent: string) {
-    const acceptableUserAgents = ['chrome', 'firefox'];
+    const acceptedUserAgents = this.options?.accepted || [];
 
-    return acceptableUserAgents.some((ua) =>
-      userAgent.toLowerCase().includes(ua.toLowerCase()),
+    if (!acceptedUserAgents.length) {
+      return true;
+    }
+
+    return acceptedUserAgents.some((agent) =>
+      userAgent.toLowerCase().includes(agent.toLowerCase()),
     );
   }
 }
