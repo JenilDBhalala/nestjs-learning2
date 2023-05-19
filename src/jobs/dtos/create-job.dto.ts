@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { JobType } from '../constants/jobs.constants';
 
 export class CreateJobDto {
